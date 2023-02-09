@@ -12,6 +12,7 @@ from ..othello.gamestate import GameState
 inf_positivo = float('inf')
 inf_negativo = float('-inf')
 
+profundidade = 0
 
 def make_move(state: GameState) -> Tuple[int, int]:
     """
@@ -20,14 +21,15 @@ def make_move(state: GameState) -> Tuple[int, int]:
     :return: (int, int) tuple with x, y coordinates of the move (remember: 0 is the first row/column)
     """
     # Lembrar: essa função deve retornar uma JOGADA (x,y)
-
-    valor_jogada = MAX_joga(state, inf_positivo, inf_negativo)
+    estado = state.copy()
+    valor_jogada = MAX_joga(estado, inf_positivo, inf_negativo)
     return valor_jogada
 
 
 def MAX_joga(state: GameState, alfa, beta):
-    if criterio_de_parada(): # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
-        return avalia_estado()   #  criar função que avalia um estado
+    if profundidade == 20: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
+        profundidade = 0 # reseta a profundidade para 0
+        return contas_pecas_pretas()   #  criar função que avalia um estado
     else:
         # inicializa v com -infinito
         v = inf_negativo
@@ -42,6 +44,7 @@ def MAX_joga(state: GameState, alfa, beta):
 
             # algoritmo segue conforme os slides da poda alfa-beta
             v = max(v, MIN_joga(estado, alfa, beta))
+            profundidade += 1
             alfa = max(alfa, v)
             if alfa >= beta:
                 break
@@ -50,24 +53,40 @@ def MAX_joga(state: GameState, alfa, beta):
 
 
 def MIN_joga(state: GameState, alfa, beta):
-    if criterio_de_parada(): # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
-        return avalia_estado()   #  criar função que avalia um estado
+    if profundidade == 20: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
+        profundidade = 0  # reseta a profundidade para 0
+        return contas_pecas_brancas()   #  criar função que avalia um estado
     else:
         v = inf_positivo
         for movimento in state.legal_moves():
             estado = state.next_state(movimento)
             v = min(v, MAX_joga(estado, alfa, beta))
+            profundidade += 1
             beta = min(beta, v)
             if beta <= alfa:
                 break
         return v # poderiamos também retornar beta ao inves de v, não afetaria o funcionamento
 
 
-def avalia_estado():
 
-def criterio_de_parada():
+def contas_pecas_pretas(state: GameState):
+
+    # Cria variavel do tabuleiro usando get_board do GameState
+    board = state.get_board()
+
+    # Cria variavel de contagem de pecas brancas usando num_piece do Board para retornar o num de pecas de uma dada cor
+    pecas_pretas = board.num_pieces('B')
+
+    return pecas_pretas
 
 
+def contas_pecas_brancas(state: GameState):
 
+    # Cria variavel do tabuleiro usando get_board do GameState
+    board = state.get_board()
 
+    # Cria variavel de contagem de pecas brancas usando num_piece do Board para retornar o num de pecas de uma dada cor
+    pecas_brancas = board.num_pieces('W')
+
+    return pecas_brancas
 

@@ -55,7 +55,7 @@ O jogador 'random' se localiza no diretório `advsearch/randomplayer`. Para joga
 basta substituir player1 ou 2 por randomplayer. Como exemplo, inicie
 uma partida random vs. random para ver o servidor funcionando:
 
-`python server.py advsearch.randomplayer advsearch.randomplayer -d 1 -p 0.3`
+`python server.py advsearch.humanplayer advsearch.randomplayer -d 1 -p 0.3`
 
 O delay pode ser de 1 segundo porque o jogador random é muito rápido (e muito incompetente). O passo é de 0.3 segundos para acompanhar o progresso da partida (pode acelerar ou reduzir conforme a necessidade).
 
