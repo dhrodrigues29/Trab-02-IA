@@ -21,15 +21,29 @@ def make_move(state: GameState) -> Tuple[int, int]:
     :return: (int, int) tuple with x, y coordinates of the move (remember: 0 is the first row/column)
     """
     # Lembrar: essa função deve retornar uma JOGADA (x,y)
-    estado = state.copy()
-    valor_jogada = MAX_joga(estado, inf_positivo, inf_negativo)
-    return valor_jogada
+    #estado = state.copy()
+    #valor_jogada = MAX_joga(estado, inf_positivo, inf_negativo)
+    prof = 0
+
+    jogadas = list(state.legal_moves())
+
+    melhor_jogada = 0
+    jogada_atual = (0, 0)
+
+    for jogada in jogadas:
+        estado = state.next_state(jogada).copy()
+        valor_jogada = MAX_joga(estado, inf_positivo, inf_negativo, prof)
+        if melhor_jogada < valor_jogada:
+            melhor_jogada = valor_jogada
+            jogada_atual = jogada
+
+    return jogada_atual
 
 
-def MAX_joga(state: GameState, alfa, beta):
-    if profundidade == 20: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
-        profundidade = 0 # reseta a profundidade para 0
-        return contas_pecas_pretas()   #  criar função que avalia um estado
+def MAX_joga(state: GameState, alfa, beta, prof):
+    if  prof == 5: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
+        prof = 0 # reseta a profundidade para 0
+        return contas_pecas_pretas(state)   #  criar função que avalia um estado
     else:
         # inicializa v com -infinito
         v = inf_negativo
@@ -43,28 +57,28 @@ def MAX_joga(state: GameState, alfa, beta):
             estado = state.next_state(movimento) # talvez seja mais apropriado utilizar state.copy() ao inves de state.next_state(movimento)
 
             # algoritmo segue conforme os slides da poda alfa-beta
-            v = max(v, MIN_joga(estado, alfa, beta))
-            profundidade += 1
+            v = max(v, MIN_joga(estado, alfa, beta, prof))
             alfa = max(alfa, v)
             if alfa >= beta:
                 break
+        prof += 1
         return v # poderiamos também retornar alfa ao inves de v, não afetaria o funcionamento
 
 
 
-def MIN_joga(state: GameState, alfa, beta):
-    if profundidade == 20: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
-        profundidade = 0  # reseta a profundidade para 0
-        return contas_pecas_brancas()   #  criar função que avalia um estado
+def MIN_joga(state: GameState, alfa, beta, prof):
+    if prof == 5: # criterio de parada é uma função a ser criada que deve limitar a profundidade da busca, seja apenas estipulando um limite de profundidade ou usando uma tecnica mais sofisticada
+        prof = 0  # reseta a profundidade para 0
+        return contas_pecas_brancas(state)   #  criar função que avalia um estado
     else:
         v = inf_positivo
         for movimento in state.legal_moves():
             estado = state.next_state(movimento)
-            v = min(v, MAX_joga(estado, alfa, beta))
-            profundidade += 1
+            v = min(v, MAX_joga(estado, alfa, beta, prof))          
             beta = min(beta, v)
             if beta <= alfa:
                 break
+        prof += 1
         return v # poderiamos também retornar beta ao inves de v, não afetaria o funcionamento
 
 
